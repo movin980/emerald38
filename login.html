@@ -28,12 +28,12 @@
     </div>
   </div>
 
-  <!-- Firebase v9+ Modular SDK -->
+  <!-- Firebase v9+ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
       authDomain: "emerald-cove.firebaseapp.com",
@@ -44,11 +44,10 @@
       measurementId: "G-4L95CCF0ZE"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
-    // Elements
     const formTitle = document.getElementById("formTitle");
     const loginBtn = document.getElementById("loginBtn");
     const registerBtn = document.getElementById("registerBtn");
@@ -57,7 +56,6 @@
 
     let isLogin = true;
 
-    // Toggle between Login/Register
     toggleLink.addEventListener("click", (e) => {
       e.preventDefault();
       isLogin = !isLogin;
@@ -69,7 +67,6 @@
         : "Already have an account? <a href='#' id='toggleLink'>Login</a>";
     });
 
-    // Login
     loginBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -81,19 +78,21 @@
       }
     });
 
-    // Register
     registerBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        await set(ref(db, "users/" + userCred.user.uid), {
+          email: email,
+          createdAt: new Date().toISOString()
+        });
         window.location.href = "index.html";
       } catch (err) {
         alert(err.message);
       }
     });
 
-    // Auto redirect if already logged in
     onAuthStateChanged(auth, (user) => {
       if (user) {
         window.location.href = "index.html";

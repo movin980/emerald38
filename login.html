@@ -13,6 +13,7 @@
     .btn:hover { background: #00796b; }
     .toggle { margin-top: 1rem; font-size: 0.9rem; }
     .toggle a { color: #00796b; text-decoration: none; font-weight: bold; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -20,18 +21,18 @@
     <h2 id="formTitle">Login</h2>
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
-    <button class="btn" onclick="login()">Login</button>
-    <button class="btn hidden" id="registerBtn" onclick="register()">Register</button>
+    <button class="btn" id="loginBtn">Login</button>
+    <button class="btn hidden" id="registerBtn">Register</button>
     <div class="toggle">
-      <span id="toggleText">Don't have an account? <a href="#" onclick="toggleForm()">Register</a></span>
+      <span id="toggleText">Don't have an account? <a href="#" id="toggleLink">Register</a></span>
     </div>
   </div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"></script>
+  <!-- Firebase v9+ Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-  <script>
     // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
@@ -42,42 +43,61 @@
       appId: "1:127721303104:web:ac85d04545d6d004e483a5",
       measurementId: "G-4L95CCF0ZE"
     };
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
 
-    // Switch between login/register
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Elements
+    const formTitle = document.getElementById("formTitle");
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+    const toggleLink = document.getElementById("toggleLink");
+    const toggleText = document.getElementById("toggleText");
+
     let isLogin = true;
-    function toggleForm() {
+
+    // Toggle between Login/Register
+    toggleLink.addEventListener("click", (e) => {
+      e.preventDefault();
       isLogin = !isLogin;
-      document.getElementById("formTitle").textContent = isLogin ? "Login" : "Register";
-      document.querySelector("button[onclick='login()']").classList.toggle("hidden", !isLogin);
-      document.getElementById("registerBtn").classList.toggle("hidden", isLogin);
-      document.getElementById("toggleText").innerHTML = isLogin 
-        ? "Don't have an account? <a href='#' onclick='toggleForm()'>Register</a>" 
-        : "Already have an account? <a href='#' onclick='toggleForm()'>Login</a>";
-    }
+      formTitle.textContent = isLogin ? "Login" : "Register";
+      loginBtn.classList.toggle("hidden", !isLogin);
+      registerBtn.classList.toggle("hidden", isLogin);
+      toggleText.innerHTML = isLogin 
+        ? "Don't have an account? <a href='#' id='toggleLink'>Register</a>" 
+        : "Already have an account? <a href='#' id='toggleLink'>Login</a>";
+    });
 
     // Login
-    function login() {
+    loginBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => window.location.href = "index.html")
-        .catch(err => alert(err.message));
-    }
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    });
 
     // Register
-    function register() {
+    registerBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => window.location.href = "index.html")
-        .catch(err => alert(err.message));
-    }
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    });
 
-    // If already logged in, go straight to dashboard
-    auth.onAuthStateChanged(user => {
-      if (user) window.location.href = "index.html";
+    // Auto redirect if already logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "index.html";
+      }
     });
   </script>
 </body>

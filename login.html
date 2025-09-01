@@ -1,54 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Emerald Cove - Login</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="firebase.js"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emerald Cove – Login</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #004d40, #00796b); height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .auth-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); width: 350px; text-align: center; }
+    .auth-card h2 { margin-bottom: 1rem; color: #004d40; }
+    .auth-card input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: 1px solid #ddd; }
+    .btn { width: 100%; background: #004d40; border: none; color: white; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+    .btn:hover { background: #00796b; }
+    .toggle { margin-top: 1rem; font-size: 0.9rem; }
+    .toggle a { color: #00796b; text-decoration: none; font-weight: bold; }
+    .hidden { display: none; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="Email" required>
-      <input type="password" id="loginPassword" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-
-    <h2 style="margin-top:2rem;">Register</h2>
-    <form id="registerForm">
-      <input type="email" id="registerEmail" placeholder="Email" required>
-      <input type="password" id="registerPassword" placeholder="Password" required>
-      <button type="submit">Register</button>
-    </form>
+  <div class="auth-card">
+    <h2 id="formTitle">Login</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button class="btn" id="loginBtn">Login</button>
+    <button class="btn hidden" id="registerBtn">Register</button>
+    <div class="toggle">
+      <span id="toggleText">Don't have an account? <a href="#" id="toggleLink">Register</a></span>
+    </div>
   </div>
 
+  <!-- Firebase v9+ -->
   <script type="module">
-    import { auth, db } from "./firebase.js";
-    import { createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-      from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { setDoc, doc } 
-      from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
+      authDomain: "emerald-cove.firebaseapp.com",
+      projectId: "emerald-cove",
+      storageBucket: "emerald-cove.firebasestorage.app",
+      messagingSenderId: "127721303104",
+      appId: "1:127721303104:web:ac85d04545d6d004e483a5",
+      measurementId: "G-4L95CCF0ZE"
+    };
 
-    loginForm.addEventListener("submit", async (e) => {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const formTitle = document.getElementById("formTitle");
+    const loginBtn = document.getElementById("loginBtn");
+    const registerBtn = document.getElementById("registerBtn");
+    const toggleLink = document.getElementById("toggleLink");
+    const toggleText = document.getElementById("toggleText");
+
+    let isLogin = true;
+
+    toggleLink.addEventListener("click", (e) => {
       e.preventDefault();
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "dashboard.html";
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login" : "Register";
+      loginBtn.classList.toggle("hidden", !isLogin);
+      registerBtn.classList.toggle("hidden", isLogin);
+      toggleText.innerHTML = isLogin 
+        ? "Don't have an account? <a href='#' id='toggleLink'>Register</a>" 
+        : "Already have an account? <a href='#' id='toggleLink'>Login</a>";
     });
 
-    registerForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("registerEmail").value;
-      const password = document.getElementById("registerPassword").value;
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", userCredential.user.uid), { email });
-      window.location.href = "dashboard.html";
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    registerBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        await set(ref(db, "users/" + userCred.user.uid), {
+          email: email,
+          createdAt: new Date().toISOString()
+        });
+        window.location.href = "index.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "index.html";
+      }
     });
   </script>
 </body>
 </html>
+

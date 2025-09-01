@@ -3,152 +3,39 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Emerald Cove – Dashboard</title>
+  <title>Emerald Cove – Login</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f9;
-      display: flex;
-    }
-    /* Sidebar */
-    .sidebar {
-      width: 220px;
-      background: #004d40;
-      color: white;
-      height: 100vh;
-      padding: 2rem 1rem;
-      position: fixed;
-      left: 0;
-      top: 0;
-    }
-    .sidebar h2 {
-      font-size: 1.4rem;
-      margin-bottom: 2rem;
-    }
-    .sidebar a {
-      display: block;
-      color: white;
-      text-decoration: none;
-      padding: 0.8rem 0;
-      margin: 0.5rem 0;
-      border-radius: 6px;
-      transition: 0.3s;
-    }
-    .sidebar a:hover {
-      background: #00796b;
-    }
-
-    /* Main content */
-    .main {
-      margin-left: 220px;
-      width: calc(100% - 220px);
-      padding: 2rem;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    header h1 {
-      margin: 0;
-      color: #004d40;
-    }
-    .btn {
-      background: #ff5252;
-      border: none;
-      color: white;
-      padding: 0.6rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: 0.3s;
-    }
-    .btn:hover {
-      background: #e53935;
-    }
-
-    /* Card */
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    }
-    .card h2 {
-      margin-top: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .add-btn {
-      background: #004d40;
-      color: white;
-      border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-    .add-btn:hover {
-      background: #00796b;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 0.8rem;
-      border-bottom: 1px solid #eee;
-    }
-    th {
-      background: #004d40;
-      color: white;
-    }
-    tr:hover td {
-      background: #f9f9f9;
-    }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #004d40, #00796b); height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .auth-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); width: 350px; text-align: center; }
+    .auth-card h2 { margin-bottom: 1rem; color: #004d40; }
+    .auth-card input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; border: 1px solid #ddd; }
+    .btn { width: 100%; background: #004d40; border: none; color: white; padding: 0.8rem; margin: 0.5rem 0; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+    .btn:hover { background: #00796b; }
+    .toggle { margin-top: 1rem; font-size: 0.9rem; }
+    .toggle a { color: #00796b; text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>🌊 Emerald Cove</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Clients</a>
-    <a href="#">Reports</a>
-    <a href="#">Settings</a>
-  </div>
-
-  <div class="main">
-    <header>
-      <h1>Dashboard</h1>
-      <button class="btn" onclick="logout()">Logout</button>
-    </header>
-
-    <div class="card">
-      <h2>Clients <button class="add-btn" onclick="addClient()">+ Add Client</button></h2>
-      <table id="clientsTable">
-        <thead>
-          <tr><th>Name</th><th>Email</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <p>Total Clients: <span id="totalClients">0</span></p>
+  <div class="auth-card">
+    <h2 id="formTitle">Login</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button class="btn" onclick="login()">Login</button>
+    <button class="btn hidden" id="registerBtn" onclick="register()">Register</button>
+    <div class="toggle">
+      <span id="toggleText">Don't have an account? <a href="#" onclick="toggleForm()">Register</a></span>
     </div>
   </div>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js"></script>
 
   <script>
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
       authDomain: "emerald-cove.firebaseapp.com",
-      databaseURL: "https://emerald-cove-default-rtdb.firebaseio.com",
       projectId: "emerald-cove",
       storageBucket: "emerald-cove.firebasestorage.app",
       messagingSenderId: "127721303104",
@@ -157,44 +44,41 @@
     };
     const app = firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.database();
 
-    // Protect route
+    // Switch between login/register
+    let isLogin = true;
+    function toggleForm() {
+      isLogin = !isLogin;
+      document.getElementById("formTitle").textContent = isLogin ? "Login" : "Register";
+      document.querySelector("button[onclick='login()']").classList.toggle("hidden", !isLogin);
+      document.getElementById("registerBtn").classList.toggle("hidden", isLogin);
+      document.getElementById("toggleText").innerHTML = isLogin 
+        ? "Don't have an account? <a href='#' onclick='toggleForm()'>Register</a>" 
+        : "Already have an account? <a href='#' onclick='toggleForm()'>Login</a>";
+    }
+
+    // Login
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => window.location.href = "index.html")
+        .catch(err => alert(err.message));
+    }
+
+    // Register
+    function register() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => window.location.href = "index.html")
+        .catch(err => alert(err.message));
+    }
+
+    // If already logged in, go straight to dashboard
     auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = "login.html";
+      if (user) window.location.href = "index.html";
     });
-
-    function logout() {
-      auth.signOut().then(() => window.location.href = "login.html");
-    }
-
-    // Add client
-    function addClient() {
-      const name = prompt("Enter client name:");
-      const email = prompt("Enter client email:");
-      if (name && email) db.ref("clients").push({ name, email });
-    }
-
-    // Display clients
-    const tbody = document.querySelector("#clientsTable tbody");
-    const totalClientsEl = document.getElementById("totalClients");
-
-    db.ref("clients").on("value", snapshot => {
-      tbody.innerHTML = "";
-      let count = 0;
-      snapshot.forEach(child => {
-        const client = child.val();
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${escapeHtml(client.name)}</td><td>${escapeHtml(client.email)}</td>`;
-        tbody.appendChild(row);
-        count++;
-      });
-      totalClientsEl.textContent = count;
-    });
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-    }
   </script>
 </body>
 </html>

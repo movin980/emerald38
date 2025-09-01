@@ -2,192 +2,186 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Emerald Cove Properties</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emerald Cove</title>
   <style>
-    :root{
-      --emerald-900: #0f5132;
-      --emerald-700: #13724e;
-      --bg: #f9f9f9;
-    }
-
-    *{box-sizing:border-box}
     body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: var(--bg);
-      color: #222;
+      padding: 0;
     }
-
     header {
+      background: #004d40;
+      color: white;
+      padding: 1rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 12px 20px;
-      background: #fff;
-      border-bottom: 1px solid #e6e6e6;
+      justify-content: center;
+      gap: 1rem;
     }
-
-    /* Logo area */
-    .logo {
-      display: flex;
-      gap: 12px;
-      align-items: center;
+    header img {
+      width: 40px;
+      height: 40px;
     }
-    .logo svg {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
+    .container {
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
     }
-    .brand {
-      line-height: 1;
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #004d40;
     }
-    .brand .title {
-      font-weight: 700;
-      color: var(--emerald-900);
-      letter-spacing: 0.6px;
-      font-size: 18px;
-    }
-    .brand .sub {
-      font-size: 11px;
-      color: #6b6b6b;
-      letter-spacing: 2px;
-      margin-top: 2px;
-    }
-
-    /* centered tagline */
-    .header-tagline {
-      font-size: 12px;
-      color: #555;
-      letter-spacing: 1px;
-      font-weight: 600;
-    }
-
-    /* small avatar at right */
-    .header-actions { display:flex; align-items:center; gap:10px; }
-    .avatar {
-      width:40px; height:40px; border-radius:999px; background:#f0f0f0;
-      display:flex; align-items:center; justify-content:center; font-size:18px;
-      color:#4b4b4b;
-    }
-
-    /* layout */
-    .layout { display:flex; height: calc(100vh - 64px); }
-    .sidebar {
-      width: 220px;
-      background: #222;
-      color: #fff;
-      padding: 20px 0;
-    }
-    .sidebar button {
-      display:flex; align-items:center; width:100%;
-      padding: 11px 20px; border:none; background:none; color:#ccc; cursor:pointer;
-      text-align:left; font-size:15px;
-    }
-    .sidebar button.active, .sidebar button:hover { background:#2b2b2b; color:#fff; }
-
-    main { flex:1; padding:20px; overflow:auto; }
-
     .card {
-      display:flex; justify-content:space-between; align-items:center;
-      background:#f4f4f4; padding:18px; border-radius:10px; margin-bottom:18px;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      text-align: center;
     }
-    .card button {
-      background: var(--emerald-700); color:#fff; border:none;
-      padding:10px 14px; border-radius:8px; cursor:pointer;
+    .card h2 {
+      margin: 0.5rem 0;
+      font-size: 1.2rem;
+      color: #333;
     }
-
+    .card p {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #004d40;
+    }
     table {
-      width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden;
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    th, td { text-align:left; padding:12px 16px; border-bottom:1px solid #f0f0f0; }
-    th { background:#fafafa; color:#666; font-weight:600; font-size:13px; }
-    tr:hover { background:#fbfbfb; }
-
-    @media (max-width:720px){
-      .header-tagline{ display:none; }
-      .sidebar{ display:none; }
-      header{ padding:10px; }
+    table thead {
+      background: #004d40;
+      color: white;
+    }
+    table th, table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    table tr:hover {
+      background: #f1f1f1;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      background: #004d40;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 1rem 0;
+    }
+    .btn:hover {
+      background: #00695c;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <div class="logo" aria-hidden="false">
-      <!-- Inline SVG logo (emerald gem) -->
-      <svg viewBox="0 0 24 24" role="img" aria-label="Emerald Cove logo" xmlns="http://www.w3.org/2000/svg">
-        <title>Emerald Cove Logo</title>
-        <path d="M12 3l3.5 3.5L12 10 8.5 6.5 12 3z" fill="#2c7a55" opacity=".85"/>
-        <path d="M4 9l4.5-4.5L12 10l-5 9L4 9z" fill="#13724e" opacity=".7"/>
-        <path d="M20 9l-4.5-4.5L12 10l5 9 3-10z" fill="#0f5132"/>
-      </svg>
-
-      <div class="brand">
-        <div class="title">EMERALD COVE</div>
-        <div class="sub">PROPERTIES</div>
-      </div>
-    </div>
-
-    <div class="header-tagline">WHERE EVERY HOME IS A TREASURE</div>
-
-    <div class="header-actions">
-      <div class="avatar" title="Account">👤</div>
-    </div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Pear_icon.svg/1024px-Pear_icon.svg.png" alt="Emerald Logo">
+    <h2>Emerald Cove Dashboard</h2>
   </header>
 
-  <div class="layout">
-    <div class="sidebar" role="navigation" aria-label="Main navigation">
-      <button class="active">Dashboard</button>
-      <button>Clients</button>
-      <button>Projects</button>
-      <button>Settings</button>
+  <div class="container">
+    <div class="card">
+      <h2>Total Clients</h2>
+      <p id="totalClients">0</p>
     </div>
 
-    <main>
-      <h1>Dashboard</h1>
+    <button class="btn" onclick="addClient()">+ Add Client</button>
 
-      <div class="card">
-        <div>
-          <div style="color:#666; font-weight:600;">Total Clients</div>
-          <div id="totalClients" style="font-size:28px; font-weight:700;">4</div>
-        </div>
-        <button onclick="addClient()">+ Add Client</button>
-      </div>
-
-      <h2>Clients</h2>
-      <table id="clientsTable" aria-describedby="client-list">
-        <thead>
-          <tr><th>Name</th><th>Email</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>John Doe</td><td>john.doe@example.com</td></tr>
-          <tr><td>Jane Smith</td><td>jane.smith@example.com</td></tr>
-          <tr><td>Joe Bloggs</td><td>joe.bloggs@example.com</td></tr>
-          <tr><td>Sarah Johnson</td><td>sarah.johnson@example.com</td></tr>
-        </tbody>
-      </table>
-    </main>
+    <table id="clientsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Clients will load here -->
+      </tbody>
+    </table>
   </div>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js"></script>
+
   <script>
+    // 🔹 Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
+      authDomain: "emerald-cove.firebaseapp.com",
+      databaseURL: "https://emerald-cove-default-rtdb.firebaseio.com",
+      projectId: "emerald-cove",
+      storageBucket: "emerald-cove.firebasestorage.app",
+      messagingSenderId: "127721303104",
+      appId: "1:127721303104:web:ac85d04545d6d004e483a5",
+      measurementId: "G-4L95CCF0ZE"
+    };
+
+    // 🔹 Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const tbody = document.querySelector("#clientsTable tbody");
+    const totalClientsEl = document.getElementById("totalClients");
+
+    // 🔹 Add new client
     function addClient() {
       const name = prompt("Enter client name:");
       const email = prompt("Enter client email:");
+
       if (name && email) {
-        const tbody = document.querySelector("#clientsTable tbody");
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${escapeHtml(name)}</td><td>${escapeHtml(email)}</td>`;
-        tbody.appendChild(row);
-        document.getElementById("totalClients").textContent = tbody.querySelectorAll("tr").length;
+        db.ref("clients").push({
+          name: name,
+          email: email
+        }).then(() => {
+          console.log("Client saved!");
+        }).catch(err => {
+          console.error("Error:", err);
+        });
       }
     }
 
-    // tiny escape to avoid accidental HTML injection
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    // 🔹 Load clients in realtime
+    db.ref("clients").on("value", snapshot => {
+      tbody.innerHTML = "";
+      if (snapshot.exists()) {
+        const clients = snapshot.val();
+        let count = 0;
+
+        for (const id in clients) {
+          const client = clients[id];
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${escapeHtml(client.name)}</td><td>${escapeHtml(client.email)}</td>`;
+          tbody.appendChild(row);
+          count++;
+        }
+
+        totalClientsEl.textContent = count;
+      } else {
+        totalClientsEl.textContent = 0;
+      }
+    });
+
+    // 🔹 Escape HTML (security)
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => (
+        { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[s]
+      ));
     }
   </script>
-
 </body>
 </html>

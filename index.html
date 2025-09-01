@@ -2,124 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emerald Cove</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emerald Cove – Dashboard</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
       margin: 0;
-      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
     }
     header {
       background: #004d40;
       color: white;
       padding: 1rem;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      gap: 1rem;
     }
-    header img {
-      width: 40px;
-      height: 40px;
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
     }
-    .container {
+    .btn {
+      background: #ff5252;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #e53935;
+    }
+    main {
       padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #004d40;
     }
     .card {
       background: white;
-      padding: 1rem;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1rem;
       margin-bottom: 2rem;
-      text-align: center;
-    }
-    .card h2 {
-      margin: 0.5rem 0;
-      font-size: 1.2rem;
-      color: #333;
-    }
-    .card p {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #004d40;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    table thead {
-      background: #004d40;
-      color: white;
-    }
-    table th, table td {
-      padding: 0.75rem;
-      text-align: left;
+    th, td {
+      padding: 0.8rem;
       border-bottom: 1px solid #ddd;
     }
-    table tr:hover {
-      background: #f1f1f1;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.6rem 1rem;
+    th {
       background: #004d40;
       color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 1rem 0;
-    }
-    .btn:hover {
-      background: #00695c;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Pear_icon.svg/1024px-Pear_icon.svg.png" alt="Emerald Logo">
-    <h2>Emerald Cove Dashboard</h2>
+    <div class="logo">🌊 Emerald Cove</div>
+    <button class="btn" onclick="logout()">Logout</button>
   </header>
 
-  <div class="container">
+  <main>
     <div class="card">
-      <h2>Total Clients</h2>
-      <p id="totalClients">0</p>
+      <h2>Clients <button onclick="addClient()">+ Add Client</button></h2>
+      <table id="clientsTable">
+        <thead>
+          <tr><th>Name</th><th>Email</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p>Total Clients: <span id="totalClients">0</span></p>
     </div>
+  </main>
 
-    <button class="btn" onclick="addClient()">+ Add Client</button>
-
-    <table id="clientsTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Clients will load here -->
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Firebase SDKs -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js"></script>
 
   <script>
-    // 🔹 Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDMj3W0mhT_voFTGV8J7u9whmiLk3ubdfc",
       authDomain: "emerald-cove.firebaseapp.com",
@@ -131,37 +93,42 @@
       measurementId: "G-4L95CCF0ZE"
     };
 
-    // 🔹 Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.database();
 
-    const tbody = document.querySelector("#clientsTable tbody");
-    const totalClientsEl = document.getElementById("totalClients");
+    // Protect route
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
 
-    // 🔹 Add new client
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    // Add client
     function addClient() {
       const name = prompt("Enter client name:");
       const email = prompt("Enter client email:");
 
       if (name && email) {
-        db.ref("clients").push({
-          name: name,
-          email: email
-        }).then(() => {
-          console.log("Client saved!");
-        }).catch(err => {
-          console.error("Error:", err);
-        });
+        db.ref("clients").push({ name, email });
       }
     }
 
-    // 🔹 Load clients in realtime
+    // Display clients
+    const tbody = document.querySelector("#clientsTable tbody");
+    const totalClientsEl = document.getElementById("totalClients");
+
     db.ref("clients").on("value", snapshot => {
       tbody.innerHTML = "";
       if (snapshot.exists()) {
         const clients = snapshot.val();
         let count = 0;
-
         for (const id in clients) {
           const client = clients[id];
           const row = document.createElement("tr");
@@ -169,18 +136,14 @@
           tbody.appendChild(row);
           count++;
         }
-
         totalClientsEl.textContent = count;
       } else {
         totalClientsEl.textContent = 0;
       }
     });
 
-    // 🔹 Escape HTML (security)
     function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => (
-        { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[s]
-      ));
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
     }
   </script>
 </body>
